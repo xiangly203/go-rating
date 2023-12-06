@@ -22,7 +22,7 @@ func GetRedisVal(key string) (string, error) {
 	return val, err
 }
 
-func SetRedisVal(key string, value interface{}, duration time.Duration) string {
+func SetRedisVal(key string, value interface{}, duration time.Duration) (string, error) {
 	//opt, err := redis.ParseURL("redis://<user>:<pass>@localhost:6379/<db>")
 	//if err != nil {
 	//	panic(err)
@@ -34,6 +34,6 @@ func SetRedisVal(key string, value interface{}, duration time.Duration) string {
 		DB:       0,  // 默认DB 0
 	})
 	ctx := context.Background()
-	get := rdb.Set(ctx, key, value, duration)
-	return get.Val()
+	val, err := rdb.Set(ctx, key, value, duration).Result()
+	return val, err
 }
