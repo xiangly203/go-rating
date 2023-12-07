@@ -1,14 +1,11 @@
 package auth
 
-import "go_gin/model/base"
-
 type GetCodeReq struct {
 	Phone string `json:"phone"`
 }
 
 type GetCodeResp struct {
-	base.BaseResp
-	Data map[string]map[string]string `json:"data"`
+	Code string `json:"code"`
 }
 
 type LoginReq struct {
@@ -21,6 +18,5 @@ type Token struct {
 	Expire string `json:"expire"`
 }
 type LoginResp struct {
-	base.BaseResp
-	Data map[string]Token `json:"data"`
+	Token
 }
