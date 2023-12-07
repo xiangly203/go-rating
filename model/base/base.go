@@ -2,6 +2,7 @@ package base
 
 import (
 	jsoniter "github.com/json-iterator/go"
+	config "go_gin/utils/common"
 )
 
 var json = jsoniter.ConfigCompatibleWithStandardLibrary
@@ -13,7 +14,7 @@ type BaseResp struct {
 }
 
 func RespSuc(data interface{}) BaseResp {
-	return BaseResp{Status: 1, Message: "success", Data: data}
+	return BaseResp{Status: config.RespOK, Message: "success", Data: data}
 }
 
 func RespErr(status int64, message string) BaseResp {
