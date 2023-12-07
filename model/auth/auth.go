@@ -13,10 +13,7 @@ type LoginReq struct {
 	Code string `json:"code"`
 }
 
-type Token struct {
-	Token  string `json:"token"`
-	Expire string `json:"expire"`
-}
 type LoginResp struct {
-	Token
+	RefreshToken string `json:"refresh_token"`
+	AccessToken  string `json:"access_token"`
 }

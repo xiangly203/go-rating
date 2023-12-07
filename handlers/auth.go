@@ -5,6 +5,7 @@ import (
 	"go_gin/model/auth"
 	_ "go_gin/model/auth"
 	"go_gin/model/base"
+	"go_gin/model/user"
 	"go_gin/utils"
 	config "go_gin/utils/common"
 	"go_gin/utils/dal/redis"
@@ -40,5 +41,15 @@ func Login(ctx *gin.Context) {
 		ctx.IndentedJSON(http.StatusOK, base.RespErr(config.RespErrWithPhoneOrCode, "手机号码或者验证码错误，请重试"))
 		return
 	}
-	ctx.IndentedJSON(http.StatusOK, base.RespSuc(auth.GetCodeResp{Code: code}))
+	refreshToken, err := utils.GenerateToken(user.UserInfo{UserPhone: req.Phone}, "refreshToken")
+	if err != nil {
+		ctx.IndentedJSON(http.StatusOK, base.RespErr(config.RespErrWithServer, "服务器错误，请重试"))
+		return
+	}
+	accessToken, err := utils.GenerateToken(user.UserInfo{UserName: "user", UserPhone: req.Phone}, "accessToken")
+	if err != nil {
+		ctx.IndentedJSON(http.StatusOK, base.RespErr(config.RespErrWithServer, "服务器错误，请重试"))
+		return
+	}
+	ctx.IndentedJSON(http.StatusOK, base.RespSuc(auth.LoginResp{AccessToken: accessToken, RefreshToken: refreshToken}))
 }
