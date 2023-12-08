@@ -2,7 +2,7 @@ package base
 
 import (
 	jsoniter "github.com/json-iterator/go"
-	config "go_gin/utils/common"
+	"go_gin/config"
 )
 
 var json = jsoniter.ConfigCompatibleWithStandardLibrary

@@ -2,9 +2,9 @@ package mw
 
 import (
 	"github.com/gin-gonic/gin"
+	"go_gin/config"
 	"go_gin/model/base"
 	"go_gin/utils"
-	config "go_gin/utils/common"
 	"net/http"
 )
 
