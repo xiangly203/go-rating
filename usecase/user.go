@@ -1,8 +1,8 @@
-package utils
+package usecase
 
 import (
 	"errors"
-	"go_gin/utils/dal/mysql"
+	"go_gin/repository/mysql"
 )
 
 func CheckUserExistByPhoneOrName(userName string, userPhone string) (bool, error) {

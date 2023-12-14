@@ -1,4 +1,9 @@
-package auth
+package model
+
+import (
+	"github.com/golang-jwt/jwt/v5"
+	"go_gin/model/user"
+)
 
 type GetCodeReq struct {
 	Phone string `json:"phone"`
@@ -16,4 +21,9 @@ type LoginReq struct {
 type LoginResp struct {
 	RefreshToken string `json:"refresh_token"`
 	AccessToken  string `json:"access_token"`
+}
+
+type MyCustomClaims struct {
+	User user.UserInfo `json:"user"`
+	jwt.RegisteredClaims
 }

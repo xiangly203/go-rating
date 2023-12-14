@@ -2,18 +2,20 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"go_gin/config"
-	"go_gin/model/auth"
-	_ "go_gin/model/auth"
+	model "go_gin/model/auth"
 	"go_gin/model/base"
 	"go_gin/model/user"
+	"go_gin/repository/mysql"
+	"go_gin/repository/redis"
+	"go_gin/usecase"
 	"go_gin/utils"
-	"go_gin/utils/dal/redis"
 	"net/http"
 )
 
 func GetCode(ctx *gin.Context) {
-	var req auth.GetCodeReq
+	var req model.GetCodeReq
 	if err := ctx.BindJSON(&req); err != nil || !utils.IsMobile(req.Phone) {
 		ctx.IndentedJSON(http.StatusOK, base.RespErr(config.RespErrWithServer, "服务器错误，请重试"))
 		return
@@ -27,11 +29,11 @@ func GetCode(ctx *gin.Context) {
 			return
 		}
 	}
-	ctx.IndentedJSON(http.StatusOK, base.RespSuc(auth.GetCodeResp{Code: code}))
+	ctx.IndentedJSON(http.StatusOK, base.RespSuc(model.GetCodeResp{Code: code}))
 }
 
 func Login(ctx *gin.Context) {
-	var req auth.LoginReq
+	var req model.LoginReq
 	if err := ctx.BindJSON(&req); err != nil || !utils.IsMobile(req.Phone) {
 		ctx.IndentedJSON(http.StatusOK, base.RespErr(config.RespErrWithServer, "服务器错误，请重试"))
 		return
@@ -41,15 +43,39 @@ func Login(ctx *gin.Context) {
 		ctx.IndentedJSON(http.StatusOK, base.RespErr(config.RespErrWithPhoneOrCode, "手机号码或者验证码错误，请重试"))
 		return
 	}
-	refreshToken, err := utils.GenerateToken(user.UserInfo{UserPhone: req.Phone}, "refreshToken")
+	users, err := mysql.FindUserByNameOrPhoneNumber("", req.Phone)
+	if err != nil {
+		ctx.IndentedJSON(http.StatusOK, base.RespErr(config.RespErrWithServer, "服务器错误，请重试"))
+	}
+	if len(users) == 0 {
+		uuidStr := uuid.NewString()
+		newUser := &user.User{
+			UserName:    utils.RandStr(10),
+			PhoneNumber: req.Phone,
+			Email:       "",
+			IsAdmin:     false,
+			IsDelete:    false,
+			UUID:        uuidStr,
+		}
+		usersToCreate := []*user.User{newUser}
+		err = mysql.CreateUsers(usersToCreate)
+		if err != nil {
+			ctx.IndentedJSON(http.StatusOK, base.RespErr(config.RespErrWithServer, "服务器错误，请重试"))
+			return
+		}
+		users, _ = mysql.FindUserByNameOrPhoneNumber("", req.Phone)
+	}
+	userFirst := users[0]
+	userInfo := user.UserInfo{UserName: userFirst.UserName, UserPhone: userFirst.PhoneNumber}
+	refreshToken, err := usecase.GenerateToken(userInfo, "refreshToken")
 	if err != nil {
 		ctx.IndentedJSON(http.StatusOK, base.RespErr(config.RespErrWithServer, "服务器错误，请重试"))
 		return
 	}
-	accessToken, err := utils.GenerateToken(user.UserInfo{UserName: "user", UserPhone: req.Phone}, "accessToken")
+	accessToken, err := usecase.GenerateToken(userInfo, "accessToken")
 	if err != nil {
 		ctx.IndentedJSON(http.StatusOK, base.RespErr(config.RespErrWithServer, "服务器错误，请重试"))
 		return
 	}
-	ctx.IndentedJSON(http.StatusOK, base.RespSuc(auth.LoginResp{AccessToken: accessToken, RefreshToken: refreshToken}))
+	ctx.IndentedJSON(http.StatusOK, base.RespSuc(model.LoginResp{AccessToken: accessToken, RefreshToken: refreshToken}))
 }

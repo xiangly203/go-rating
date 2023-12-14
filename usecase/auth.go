@@ -1,26 +1,21 @@
-package utils
+package usecase
 
 import (
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/joho/godotenv"
 	"go_gin/config"
+	model "go_gin/model/auth"
 	"go_gin/model/user"
-	utils "go_gin/utils/common"
 	"os"
 	"time"
 )
 
-type MyCustomClaims struct {
-	User user.UserInfo `json:"user"`
-	jwt.RegisteredClaims
-}
-
 func GenerateToken(userInfo user.UserInfo, tokeType string) (string, error) {
 	var tokenExpireDuration time.Duration
-	if tokeType == "accessToken" {
+	if config.AccessToken == tokeType {
 		tokenExpireDuration = config.AccessTokenExpireDuration
-	} else if tokeType == "refreshToken" {
+	} else if config.RefreshToken == tokeType {
 		tokenExpireDuration = config.RefreshTokenExpireDuration
 	} else {
 		return "", errors.New("token 类型错误")
@@ -32,9 +27,9 @@ func GenerateToken(userInfo user.UserInfo, tokeType string) (string, error) {
 	key := os.Getenv("JWT_KEY")
 	byteKey := []byte(key)
 	expirationTime := time.Now().Add(tokenExpireDuration)
-	claims := &MyCustomClaims{
-		userInfo,
-		jwt.RegisteredClaims{
+	claims := model.MyCustomClaims{
+		User: userInfo,
+		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 			Subject:   tokeType,
 		},
@@ -44,14 +39,14 @@ func GenerateToken(userInfo user.UserInfo, tokeType string) (string, error) {
 	return tokenString, err
 }
 
-func ParseToken(tokenString string) (*MyCustomClaims, error) {
-	token, err := jwt.ParseWithClaims(tokenString, &MyCustomClaims{}, func(token *jwt.Token) (interface{}, error) {
+func ParseToken(tokenString string) (*model.MyCustomClaims, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &model.MyCustomClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("JWT_KEY")), nil
-	})
+	}, jwt.WithLeeway(time.Minute*1))
 	if err != nil {
 		return nil, err
 	}
-	if claims, ok := token.Claims.(*MyCustomClaims); ok {
+	if claims, ok := token.Claims.(*model.MyCustomClaims); ok {
 		return claims, nil
 	}
 	return nil, errors.New("无法解析token")
@@ -62,10 +57,13 @@ func RefreshToken(refreshTokenString string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if ok, err := utils.CheckUserExistByPhoneOrName(myCustomClaims.User.UserName, ""); err != nil && ok {
+	if ok, err := CheckUserExistByPhoneOrName(myCustomClaims.User.UserName, ""); err != nil && ok {
 		return "", errors.New("用户不存在")
 	}
-	token, err := GenerateToken(myCustomClaims.User, "accessToken")
+	//if time.Now().After(myCustomClaims.MapClaims.) {
+	//	return "", errors.New("Token 过期")
+	//}
+	token, err := GenerateToken(myCustomClaims.User, config.AccessToken)
 	if err != nil {
 		return "", err
 	}
