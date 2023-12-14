@@ -20,7 +20,7 @@ func GenerateToken(userInfo user.UserInfo, tokeType string) (string, error) {
 	} else {
 		return "", errors.New("token 类型错误")
 	}
-	err := godotenv.Load(".env")
+	err := godotenv.Load(".env.local")
 	if err != nil {
 		return "", errors.New("载入 .env 文件失败")
 	}
