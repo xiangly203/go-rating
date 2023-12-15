@@ -1,6 +1,9 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"context"
+	"gorm.io/gorm"
+)
 
 type Product struct {
 	gorm.Model
@@ -18,4 +21,10 @@ type Product struct {
 
 func (u *Product) TableName() string {
 	return "product"
+}
+
+type ProductRepository interface {
+	Create(c context.Context, product *Product) error
+	Fetch(c context.Context) ([]Product, error)
+	Update(c context.Context, products *[]Product) error
 }

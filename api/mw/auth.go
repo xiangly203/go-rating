@@ -5,7 +5,7 @@ import (
 	"go_gin/config"
 	model "go_gin/model/auth"
 	"go_gin/model/base"
-	"go_gin/usecase"
+	"go_gin/service"
 	"net/http"
 )
 
@@ -17,14 +17,14 @@ func JWTAuth() gin.HandlerFunc {
 			ctx.IndentedJSON(http.StatusOK, base.RespErr(config.RespErrWithToken, "无登录权限"))
 			return
 		}
-		cliam, err := usecase.ParseToken(token)
+		cliam, err := service.ParseToken(token)
 		if err != nil {
 			ctx.Abort()
 			ctx.IndentedJSON(http.StatusOK, base.RespErr(config.RespErrWithToken, err.Error()))
 			return
 		}
 		if cliam.Subject == config.AccessToken {
-			newAccessToken, _ := usecase.RefreshToken(token)
+			newAccessToken, _ := service.RefreshToken(token)
 			ctx.Abort()
 			ctx.IndentedJSON(http.StatusOK, base.RespSuc(model.LoginResp{AccessToken: newAccessToken, RefreshToken: ""}))
 		}

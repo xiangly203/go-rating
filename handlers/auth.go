@@ -7,9 +7,8 @@ import (
 	model "go_gin/model/auth"
 	"go_gin/model/base"
 	"go_gin/model/user"
-	"go_gin/repository/mysql"
-	"go_gin/repository/redis"
-	"go_gin/usecase"
+	"go_gin/repository"
+	"go_gin/service"
 	"go_gin/utils"
 	"net/http"
 )
@@ -20,10 +19,10 @@ func GetCode(ctx *gin.Context) {
 		ctx.IndentedJSON(http.StatusOK, base.RespErr(config.RespErrWithServer, "服务器错误，请重试"))
 		return
 	}
-	code, err := redis.GetRedisVal(req.Phone)
+	code, err := repository.GetRedisVal(req.Phone)
 	if err != nil || len(code) == 0 {
 		code, err = utils.GenCode(req.Phone)
-		ok, _ := redis.SetRedisVal(req.Phone, code, config.CodeTTL)
+		ok, _ := repository.SetRedisVal(req.Phone, code, config.CodeTTL)
 		if err != nil || ok != "OK" {
 			ctx.IndentedJSON(http.StatusOK, base.RespErr(config.RespErrWithServer, "服务器错误，请重试"))
 			return
@@ -38,12 +37,12 @@ func Login(ctx *gin.Context) {
 		ctx.IndentedJSON(http.StatusOK, base.RespErr(config.RespErrWithServer, "服务器错误，请重试"))
 		return
 	}
-	code, err := redis.GetRedisVal(req.Phone)
+	code, err := repository.GetRedisVal(req.Phone)
 	if err != nil || len(code) == 0 || req.Code != code {
 		ctx.IndentedJSON(http.StatusOK, base.RespErr(config.RespErrWithPhoneOrCode, "手机号码或者验证码错误，请重试"))
 		return
 	}
-	users, err := mysql.FindUserByNameOrPhoneNumber("", req.Phone)
+	users, err := repository.FindUserByNameOrPhoneNumber("", req.Phone)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusOK, base.RespErr(config.RespErrWithServer, "服务器错误，请重试"))
 	}
@@ -58,21 +57,21 @@ func Login(ctx *gin.Context) {
 			UUID:        uuidStr,
 		}
 		usersToCreate := []*user.User{newUser}
-		err = mysql.CreateUsers(usersToCreate)
+		err = repository.CreateUsers(usersToCreate)
 		if err != nil {
 			ctx.IndentedJSON(http.StatusOK, base.RespErr(config.RespErrWithServer, "服务器错误，请重试"))
 			return
 		}
-		users, _ = mysql.FindUserByNameOrPhoneNumber("", req.Phone)
+		users, _ = repository.FindUserByNameOrPhoneNumber("", req.Phone)
 	}
 	userFirst := users[0]
 	userInfo := user.UserInfo{UserName: userFirst.UserName, UserPhone: userFirst.PhoneNumber}
-	refreshToken, err := usecase.GenerateToken(userInfo, "refreshToken")
+	refreshToken, err := service.GenerateToken(userInfo, "refreshToken")
 	if err != nil {
 		ctx.IndentedJSON(http.StatusOK, base.RespErr(config.RespErrWithServer, "服务器错误，请重试"))
 		return
 	}
-	accessToken, err := usecase.GenerateToken(userInfo, "accessToken")
+	accessToken, err := service.GenerateToken(userInfo, "accessToken")
 	if err != nil {
 		ctx.IndentedJSON(http.StatusOK, base.RespErr(config.RespErrWithServer, "服务器错误，请重试"))
 		return

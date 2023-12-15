@@ -6,7 +6,7 @@ import (
 	"unsafe"
 )
 
-const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+const letters = "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 var src = rand.NewSource(time.Now().UnixNano())
 
@@ -20,7 +20,6 @@ const (
 
 func RandStr(n int) string {
 	b := make([]byte, n)
-	// A rand.Int63() generates 63 random bits, enough for letterIdMax letters!
 	for i, cache, remain := n-1, src.Int63(), letterIdMax; i >= 0; {
 		if remain == 0 {
 			cache, remain = src.Int63(), letterIdMax

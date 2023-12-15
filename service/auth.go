@@ -1,4 +1,4 @@
-package usecase
+package service
 
 import (
 	"errors"
@@ -7,6 +7,7 @@ import (
 	"go_gin/config"
 	model "go_gin/model/auth"
 	"go_gin/model/user"
+	"go_gin/repository"
 	"os"
 	"time"
 )
@@ -68,4 +69,12 @@ func RefreshToken(refreshTokenString string) (string, error) {
 		return "", err
 	}
 	return token, nil
+}
+
+func LoginCheck(phone string, code string) bool {
+	val, err := repository.GetRedisVal(phone)
+	if err != nil || val != code {
+		return false
+	}
+	return true
 }

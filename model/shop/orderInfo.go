@@ -1,6 +1,9 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"context"
+	"gorm.io/gorm"
+)
 
 type OrderInfo struct {
 	gorm.Model
@@ -19,15 +22,8 @@ func (u *OrderInfo) TableName() string {
 	return "order_info"
 }
 
-type OrderItem struct {
-	gorm.Model
-	OrderItemID string  `json:"order_item_id" column:"order_item_id"`
-	OrderInfoID string  `json:"order_info_id" column:"order_info_id"`
-	OrderAmount int64   `json:"order_amount" column:"order_amount"`
-	OrginPrice  float64 `json:"orgin_price" column:"orgin_price"`
-	RealPrice   float64 `json:"real_price" column:"real_price"`
-}
-
-func (u *OrderItem) TableName() string {
-	return "order_item"
+type OrderInfoRepository interface {
+	Create(c context.Context, orderInfo *OrderInfo) error
+	Fetch(c context.Context) ([]OrderInfo, error)
+	Update(c context.Context, orderInfo OrderInfo) error
 }

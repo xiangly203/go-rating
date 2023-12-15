@@ -1,4 +1,4 @@
-package mysql
+package bootstrap
 
 import (
 	"gorm.io/driver/mysql"
@@ -8,11 +8,11 @@ import (
 
 var dsn = "root:123456@tcp(localhost:3306)/test?charset=utf8&parseTime=True&loc=Local"
 
-var DB *gorm.DB
+var Mysql *gorm.DB
 
-func Init() {
+func MysqlInit() {
 	var err error
-	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
+	Mysql, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
 		SkipDefaultTransaction: true,
 		PrepareStmt:            true,
 		Logger:                 logger.Default.LogMode(logger.Info),
