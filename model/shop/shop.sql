@@ -9,7 +9,7 @@ CREATE TABLE `shops`
     `description` TEXT               NOT NULL COMMENT '描述',
     `status`      INT                NOT NULL COMMENT '状态',
     PRIMARY KEY (`id`) COMMENT '主键',
-        UNIQUE KEY `uq_shop_id` (`shop_id`) COMMENT '产品ID唯一键'
+    UNIQUE KEY `uq_shop_id` (`shop_id`) COMMENT '产品ID唯一键'
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_general_ci COMMENT ='商店表';

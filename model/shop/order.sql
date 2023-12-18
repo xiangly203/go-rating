@@ -7,7 +7,7 @@ CREATE TABLE `order_infos`
     `order_info_id` VARCHAR(255)       NOT NULL COMMENT '订单信息ID',
     `user_id`       VARCHAR(255)       NOT NULL COMMENT '用户ID',
     `shop_id`       VARCHAR(255)       NOT NULL COMMENT '商店ID',
-    `receiver_id`   VARCHAR(255)       NOT NULL COMMENT '接收者ID',
+    `receiver_id`   VARCHAR(255)       NOT NULL COMMENT '支付方式ID',
     `total_amount`  DOUBLE             NOT NULL COMMENT '总金额',
     `pay_status`    INT                NOT NULL COMMENT '支付状态',
     `pay_amount`    DOUBLE             NOT NULL COMMENT '支付金额',
