@@ -1,4 +1,4 @@
-package bootstrap
+package dal
 
 import (
 	"gorm.io/driver/mysql"

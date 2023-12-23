@@ -4,15 +4,15 @@ import (
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/joho/godotenv"
+	"go_gin/biz/dal/db"
+	model "go_gin/biz/entity/auth"
+	entity "go_gin/biz/entity/user"
 	"go_gin/config"
-	model "go_gin/model/auth"
-	"go_gin/model/user"
-	"go_gin/repository"
 	"os"
 	"time"
 )
 
-func GenerateToken(userInfo user.UserInfo, tokeType string) (string, error) {
+func GenerateToken(userInfo entity.UserInfo, tokeType string) (string, error) {
 	var tokenExpireDuration time.Duration
 	if config.AccessToken == tokeType {
 		tokenExpireDuration = config.AccessTokenExpireDuration
@@ -72,7 +72,7 @@ func RefreshToken(refreshTokenString string) (string, error) {
 }
 
 func LoginCheck(phone string, code string) bool {
-	val, err := repository.GetRedisVal(phone)
+	val, err := db.GetRedisVal(phone)
 	if err != nil || val != code {
 		return false
 	}

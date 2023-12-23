@@ -2,10 +2,10 @@ package mw
 
 import (
 	"github.com/gin-gonic/gin"
+	"go_gin/biz/service"
 	"go_gin/config"
-	model "go_gin/model/auth"
+	model "go_gin/entity/auth"
 	"go_gin/model/base"
-	"go_gin/service"
 	"net/http"
 )
 

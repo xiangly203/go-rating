@@ -1,34 +1,34 @@
-package handlers
+package handler
 
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"go_gin/api/model"
+	"go_gin/biz/dal/db"
+	"go_gin/biz/entity/base"
+	entity "go_gin/biz/entity/user"
+	"go_gin/biz/service"
 	"go_gin/config"
-	model "go_gin/model/auth"
-	"go_gin/model/base"
-	"go_gin/model/user"
-	"go_gin/repository"
-	"go_gin/service"
 	"go_gin/utils"
 	"net/http"
 )
 
-func GetCode(ctx *gin.Context) {
+func GetCode(c *gin.Context) {
 	var req model.GetCodeReq
-	if err := ctx.BindJSON(&req); err != nil || !utils.IsMobile(req.Phone) {
-		ctx.IndentedJSON(http.StatusOK, base.RespErr(config.RespErrWithServer, "服务器错误，请重试"))
+	if err := c.BindJSON(&req); err != nil || !utils.IsMobile(req.Phone) {
+		c.IndentedJSON(http.StatusOK, base.RespErr(config.RespErrWithServer, "服务器错误，请重试"))
 		return
 	}
-	code, err := repository.GetRedisVal(req.Phone)
+	code, err := db.GetRedisVal(req.Phone)
 	if err != nil || len(code) == 0 {
 		code, err = utils.GenCode(req.Phone)
-		ok, _ := repository.SetRedisVal(req.Phone, code, config.CodeTTL)
+		ok, _ := db.SetRedisVal(req.Phone, code, config.CodeTTL)
 		if err != nil || ok != "OK" {
-			ctx.IndentedJSON(http.StatusOK, base.RespErr(config.RespErrWithServer, "服务器错误，请重试"))
+			c.IndentedJSON(http.StatusOK, base.RespErr(config.RespErrWithServer, "服务器错误，请重试"))
 			return
 		}
 	}
-	ctx.IndentedJSON(http.StatusOK, base.RespSuc(model.GetCodeResp{Code: code}))
+	c.IndentedJSON(http.StatusOK, base.RespSuc(model.GetCodeResp{Code: code}))
 }
 
 func Login(ctx *gin.Context) {
@@ -37,18 +37,18 @@ func Login(ctx *gin.Context) {
 		ctx.IndentedJSON(http.StatusOK, base.RespErr(config.RespErrWithServer, "服务器错误，请重试"))
 		return
 	}
-	code, err := repository.GetRedisVal(req.Phone)
+	code, err := db.GetRedisVal(req.Phone)
 	if err != nil || len(code) == 0 || req.Code != code {
 		ctx.IndentedJSON(http.StatusOK, base.RespErr(config.RespErrWithPhoneOrCode, "手机号码或者验证码错误，请重试"))
 		return
 	}
-	users, err := repository.FindUserByNameOrPhoneNumber("", req.Phone)
+	users, err := db.FindUserByNameOrPhoneNumber("", req.Phone)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusOK, base.RespErr(config.RespErrWithServer, "服务器错误，请重试"))
 	}
 	if len(users) == 0 {
 		uuidStr := uuid.NewString()
-		newUser := &user.User{
+		newUser := &entity.User{
 			UserName:    utils.RandStr(10),
 			PhoneNumber: req.Phone,
 			Email:       "",
@@ -56,16 +56,16 @@ func Login(ctx *gin.Context) {
 			IsDelete:    false,
 			UUID:        uuidStr,
 		}
-		usersToCreate := []*user.User{newUser}
-		err = repository.CreateUsers(usersToCreate)
+		usersToCreate := []*entity.User{newUser}
+		err = db.CreateUsers(usersToCreate)
 		if err != nil {
 			ctx.IndentedJSON(http.StatusOK, base.RespErr(config.RespErrWithServer, "服务器错误，请重试"))
 			return
 		}
-		users, _ = repository.FindUserByNameOrPhoneNumber("", req.Phone)
+		users, _ = db.FindUserByNameOrPhoneNumber("", req.Phone)
 	}
 	userFirst := users[0]
-	userInfo := user.UserInfo{UserName: userFirst.UserName, UserPhone: userFirst.PhoneNumber}
+	userInfo := entity.UserInfo{UserName: userFirst.UserName, UserPhone: userFirst.PhoneNumber}
 	refreshToken, err := service.GenerateToken(userInfo, "refreshToken")
 	if err != nil {
 		ctx.IndentedJSON(http.StatusOK, base.RespErr(config.RespErrWithServer, "服务器错误，请重试"))

@@ -2,8 +2,7 @@ package test
 
 import (
 	"fmt"
-	"go_gin/model/user"
-	"go_gin/service"
+	"go_gin/biz/service"
 	"testing"
 )
 

@@ -2,11 +2,11 @@ package service
 
 import (
 	"errors"
-	"go_gin/repository"
+	"go_gin/biz/dal/db"
 )
 
 func CheckUserExistByPhoneOrName(userName string, userPhone string) (bool, error) {
-	if _, err := repository.FindUserByNameOrPhoneNumber(userName, userPhone); err != nil {
+	if _, err := db.FindUserByNameOrPhoneNumber(userName, userPhone); err != nil {
 		return false, errors.New("用户不存在")
 	}
 	return true, nil
