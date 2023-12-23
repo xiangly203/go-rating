@@ -1,8 +1,10 @@
 package model
 
 type ShopListReq struct {
-	ShopName string `json:"shop_name"`
-	ShopType string `json:"shop_type"`
+	Name   string `json:"name"`
+	TypeID int64  `json:"type_id"`
+	Offset int64  `json:"offset"`
+	Limit  int64  `json:"limit"`
 }
 type ShopDTO struct {
 	Name      string  `json:"name" column:"name"`
@@ -20,5 +22,8 @@ type ShopDTO struct {
 }
 
 type ShopListResp struct {
-	ShopList []ShopDTO `json:"shop_list"`
+	HasMore  bool       `json:"has_more"`
+	Total    int64      `json:"total"`
+	Count    int64      `json:"count"`
+	ShopList []*ShopDTO `json:"shop_list"`
 }

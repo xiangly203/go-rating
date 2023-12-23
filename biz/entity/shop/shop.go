@@ -7,7 +7,7 @@ import (
 type Shop struct {
 	gorm.Model
 	Name      string  `json:"name" column:"name"`
-	TypeID    uint64  `json:"type_id" column:"type_id"`
+	TypeID    int     `json:"type_id" column:"type_id"`
 	Images    string  `json:"images" column:"images"`
 	Area      string  `json:"area" column:"area"`
 	Address   string  `json:"address" column:"address"`

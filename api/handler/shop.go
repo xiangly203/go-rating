@@ -19,12 +19,17 @@ func ShopList(c *gin.Context) {
 		return
 	}
 
-	shopList, err := service.ShopList(req)
+	shopList, total, err := service.ShopList(req)
 	if err != nil || len(shopList) == 0 {
 		c.IndentedJSON(http.StatusOK, base.RespErr(config.RespErrWithServer, "服务器错误，请重试"))
 		return
 	}
-	c.IndentedJSON(http.StatusOK, base.RespSuc(model.ShopListResp{}))
+	hasMore := false
+	count := int64(len(shopList))
+	if total > req.Limit*req.Offset+count {
+		hasMore = true
+	}
+	c.IndentedJSON(http.StatusOK, base.RespSuc(model.ShopListResp{ShopList: shopList, HasMore: hasMore, Count: count, Total: total}))
 }
 
 func ShopUpdate(c *gin.Context) {

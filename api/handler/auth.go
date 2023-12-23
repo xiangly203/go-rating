@@ -65,7 +65,7 @@ func Login(ctx *gin.Context) {
 		users, _ = db.FindUserByNameOrPhoneNumber("", req.Phone)
 	}
 	userFirst := users[0]
-	userInfo := entity.UserInfo{UserName: userFirst.UserName, UserPhone: userFirst.PhoneNumber}
+	userInfo := model.UserInfo{UserName: userFirst.UserName, UserPhone: userFirst.PhoneNumber}
 	refreshToken, err := service.GenerateToken(userInfo, "refreshToken")
 	if err != nil {
 		ctx.IndentedJSON(http.StatusOK, base.RespErr(config.RespErrWithServer, "服务器错误，请重试"))
