@@ -12,9 +12,9 @@ func ShopList(shop model.ShopListReq) ([]*model.ShopDTO, error) {
 	if err != nil {
 		return nil, errors.New("服务器错误，请重试")
 	}
-	shops,err := utils.ConvertToDTO(shopList, &model.ShopDTO{})
+	_, err = utils.ConvertToDTO(shopList, &model.ShopDTO{})
 	if err != nil {
 		return nil, err
 	}
-	return shops, nil
+	return nil, nil
 }

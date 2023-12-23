@@ -1,14 +1,9 @@
 package entity
 
-import (
-	"github.com/golang-jwt/jwt/v5"
-	entity "go_gin/biz/entity/user"
-)
-
-type MyCustomClaims struct {
-	User entity.UserInfo `json:"user"`
-	jwt.RegisteredClaims
-}
+//type MyCustomClaims struct {
+//	User model.UserInfo `json:"user"`
+//	jwt.RegisteredClaims
+//}
 
 //type LoginService interface {
 //	GetCode(c context.Context, phone string) (string, error)

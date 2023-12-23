@@ -4,15 +4,14 @@ import (
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/joho/godotenv"
+	"go_gin/api/model"
 	"go_gin/biz/dal/db"
-	model "go_gin/biz/entity/auth"
-	entity "go_gin/biz/entity/user"
 	"go_gin/config"
 	"os"
 	"time"
 )
 
-func GenerateToken(userInfo entity.UserInfo, tokeType string) (string, error) {
+func GenerateToken(userInfo model.UserInfo, tokeType string) (string, error) {
 	var tokenExpireDuration time.Duration
 	if config.AccessToken == tokeType {
 		tokenExpireDuration = config.AccessTokenExpireDuration

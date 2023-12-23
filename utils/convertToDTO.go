@@ -4,7 +4,7 @@ import "reflect"
 
 func ConvertToDTO(origin interface{}, target interface{}) (interface{}, error) {
 	elem := reflect.ValueOf(target).Elem()
-	for i := 0; i < elem.NumMethod(); i++ {
+	for i := 0; i < elem.NumField(); i++ {
 		field := elem.Type().Field(i)
 		sourceField := reflect.ValueOf(origin).Elem().FieldByName(field.Name)
 		if !sourceField.IsValid() {

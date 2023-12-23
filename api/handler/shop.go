@@ -24,8 +24,6 @@ func ShopList(c *gin.Context) {
 		c.IndentedJSON(http.StatusOK, base.RespErr(config.RespErrWithServer, "服务器错误，请重试"))
 		return
 	}
-	shopDTO, err := make([]model.ShopDTO, len(shopList))
-
 	c.IndentedJSON(http.StatusOK, base.RespSuc(model.ShopListResp{}))
 }
 

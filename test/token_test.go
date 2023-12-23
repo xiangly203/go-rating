@@ -2,12 +2,13 @@ package test
 
 import (
 	"fmt"
+	"go_gin/api/model"
 	"go_gin/biz/service"
 	"testing"
 )
 
 func TestToken(t *testing.T) {
-	user := user.UserInfo{
+	user := model.UserInfo{
 		UserName:  "test",
 		UserPhone: "12345678900",
 	}
