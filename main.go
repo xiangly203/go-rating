@@ -6,7 +6,6 @@ import (
 	"go_gin/api/mw/logger"
 	"go_gin/handlers"
 	"go_gin/repository/mysql"
-	"go_gin/test"
 )
 
 func main() {
@@ -22,5 +21,5 @@ func main() {
 	router.POST("/login", handlers.Login)
 	router.Use(mw.JWTAuth())
 	router.Run("localhost:8888")
-	test.TokenTest()
+	//test.TokenTest()
 }

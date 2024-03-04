@@ -13,4 +13,5 @@ const (
 	RespErrWithPhoneOrCode     = 5002
 	RespErrWithServer          = 5003
 	RespErrTokenExpire         = 5004
+	LenLogid                   = 32
 )

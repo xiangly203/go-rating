@@ -2,16 +2,17 @@ package test
 
 import (
 	"fmt"
-	"go_gin/model/user"
-	"go_gin/usecase"
+	"go_gin/api/model"
+	"go_gin/biz/service"
+	"testing"
 )
 
-func TokenTest() {
-	user := user.UserInfo{
+func TestToken(t *testing.T) {
+	user := model.UserInfo{
 		UserName:  "test",
 		UserPhone: "12345678900",
 	}
-	accessToken, err := usecase.GenerateToken(user, "accessToken")
+	accessToken, err := service.GenerateToken(user, "accessToken")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -22,7 +23,7 @@ func TokenTest() {
 	//}
 	//fmt.Println(refreshToken)
 	//time.Sleep(time.Minute * 5)
-	myClaims, err := usecase.ParseToken(accessToken)
+	myClaims, err := service.ParseToken(accessToken)
 	if err != nil {
 		fmt.Println(err)
 	}
