@@ -6,7 +6,7 @@ import (
 	"go_gin/api/model"
 	"go_gin/biz/dal/db"
 	"go_gin/biz/entity/base"
-	entity "go_gin/biz/entity/user"
+	"go_gin/biz/entity/user"
 	"go_gin/biz/service"
 	"go_gin/config"
 	"go_gin/utils"
@@ -48,7 +48,7 @@ func Login(ctx *gin.Context) {
 	}
 	if len(users) == 0 {
 		uuidStr := uuid.NewString()
-		newUser := &entity.User{
+		newUser := &user.User{
 			UserName:    utils.RandStr(10),
 			PhoneNumber: req.Phone,
 			Email:       "",
@@ -56,7 +56,7 @@ func Login(ctx *gin.Context) {
 			IsDelete:    false,
 			UUID:        uuidStr,
 		}
-		usersToCreate := []*entity.User{newUser}
+		usersToCreate := []*user.User{newUser}
 		err = db.CreateUsers(usersToCreate)
 		if err != nil {
 			ctx.IndentedJSON(http.StatusOK, base.RespErr(config.RespErrWithServer, "服务器错误，请重试"))
