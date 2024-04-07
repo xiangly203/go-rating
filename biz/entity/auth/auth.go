@@ -1,4 +1,4 @@
-package entity
+package auth
 
 //type MyCustomClaims struct {
 //	User model.UserInfo `json:"user"`

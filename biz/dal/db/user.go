@@ -5,12 +5,12 @@ import (
 	"go_gin/biz/entity/user"
 )
 
-func CreateUsers(users []*entity.User) error {
+func CreateUsers(users []*user.User) error {
 	return dal.Mysql.Create(users).Error
 }
 
-func FindUserByNameOrPhoneNumber(userName string, phoneNumber string) ([]*entity.User, error) {
-	res := make([]*entity.User, 0)
+func FindUserByNameOrPhoneNumber(userName string, phoneNumber string) ([]*user.User, error) {
+	res := make([]*user.User, 0)
 	if err := dal.Mysql.Where(dal.Mysql.Or("user_name = ?", userName).
 		Or("phone_number = ?", phoneNumber)).
 		Find(&res).Error; err != nil {
