@@ -13,13 +13,17 @@ func main() {
 	//////记录日志
 	//f, _ := os.Create("./logs/gin.log")
 	//gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
-	dal.MysqlInit()
+	//dal.MysqlInit()
+	dal.PostgresInit()
 	//router := gin.Default()
 	router := gin.New()
 	router.Use(gin.Recovery(), logger.TraceLogger())
 	router.POST("/getCode", handler.GetCode)
 	router.POST("/login", handler.Login)
 	router.Use(mw.JWTAuth())
-	router.Run("localhost:8888")
+	err := router.Run("localhost:8888")
+	if err != nil {
+		return
+	}
 	//test.TokenTest()
 }
