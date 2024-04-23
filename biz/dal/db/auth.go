@@ -7,11 +7,6 @@ import (
 )
 
 func GetRedisVal(key string) (string, error) {
-	//opt, err := redis.ParseURL("redis://"":<pass>@localhost:6379/<db>")
-	//if err != nil {
-	//	panic(err)
-	//}
-	//rdb := redis.NewClient(opt)
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "", // 没有密码，默认值
@@ -23,11 +18,6 @@ func GetRedisVal(key string) (string, error) {
 }
 
 func SetRedisVal(key string, value interface{}, duration time.Duration) (string, error) {
-	//opt, err := redis.ParseURL("redis://<user>:<pass>@localhost:6379/<db>")
-	//if err != nil {
-	//	panic(err)
-	//}
-	//rdb := redis.NewClient(opt)
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "", // 没有密码，默认值
