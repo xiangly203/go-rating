@@ -67,3 +67,7 @@ func ShopAdd(c *gin.Context) {
 	}
 	c.IndentedJSON(http.StatusOK, base.RespSuc(model.GetCodeResp{Code: code}))
 }
+
+func ShopDetail(c *gin.Context) {
+
+}

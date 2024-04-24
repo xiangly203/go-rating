@@ -1,6 +1,7 @@
 package dal
 
 import (
+	"go_gin/biz/dal/cache"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -37,4 +38,12 @@ func PostgresInit() {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func CacheInit() {
+	cache.NewRedisCache(cache.RedisConf{
+		Addr:     "localhost:6379",
+		Password: "",
+		Db:       0,
+	})
 }
