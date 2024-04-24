@@ -13,15 +13,18 @@ func main() {
 	dal.CacheInit()
 	router := gin.New()
 	router.Use(gin.Recovery(), logger.TraceLogger())
-	router.POST("/getCode", handler.GetCode)
-	router.POST("/login", handler.Login)
-	router.Use(mw.JWTAuth())
-	shop := router.Group("/shop")
+	userApi := router.Group("/user")
 	{
-		shop.GET("/list", handler.ShopList)
-		shop.GET("/detail", handler.ShopDetail)
-		shop.POST("/add", handler.ShopAdd)
-		shop.POST("/update", handler.ShopUpdate)
+		userApi.GET("/code", handler.GetCode)
+		userApi.POST("/login", handler.Login)
+	}
+	router.Use(mw.JWTAuth())
+	shopApi := router.Group("/shop")
+	{
+		shopApi.GET("/list", handler.ShopList)
+		shopApi.GET("/detail", handler.ShopDetail)
+		shopApi.POST("/add", handler.ShopAdd)
+		shopApi.POST("/update", handler.ShopUpdate)
 	}
 	err := router.Run("localhost:8888")
 	if err != nil {

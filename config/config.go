@@ -3,15 +3,13 @@ package config
 import "time"
 
 const (
-	CodeTTL                    = 2 * time.Minute
+	AccessToken     = "accessToken"
+	RefreshToken    = "refreshToken"
+	CodeTTL         = 2 * time.Minute
+	DefaultCacheTTL = 5 * time.Minute // CacheTTL
+
 	RefreshTokenExpireDuration = time.Second * 10
 	AccessTokenExpireDuration  = time.Hour * 12
-	AccessToken                = "accessToken"
-	RefreshToken               = "refreshToken"
-	RespOK                     = 200
-	RespErrWithToken           = 5001
-	RespErrWithPhoneOrCode     = 5002
-	RespErrWithServer          = 5003
-	RespErrTokenExpire         = 5004
-	LenLogid                   = 32
+
+	LenLogid = 32
 )

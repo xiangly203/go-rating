@@ -27,3 +27,17 @@ type ShopListResp struct {
 	Count    int64      `json:"count"`
 	ShopList []*ShopDTO `json:"shop_list"`
 }
+
+type ShopUpdateReq struct {
+	HasMore  bool       `json:"has_more"`
+	Total    int64      `json:"total"`
+	Count    int64      `json:"count"`
+	ShopList []*ShopDTO `json:"shop_list"`
+}
+
+type ShopDetailReq struct {
+	HasMore  bool       `json:"has_more"`
+	Total    int64      `json:"total"`
+	Count    int64      `json:"count"`
+	ShopList []*ShopDTO `json:"shop_list"`
+}
