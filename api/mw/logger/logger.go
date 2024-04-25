@@ -1,6 +1,8 @@
 package logger
 
 import (
+	"errors"
+	"github.com/google/uuid"
 	"net"
 	"net/http"
 	"net/http/httputil"
@@ -33,9 +35,7 @@ type Config struct {
 	SkipPathRegexps []*regexp.Regexp
 	Context         Fn
 	DefaultLevel    zapcore.Level
-	// skip is a Skipper that indicates which logs should not be written.
-	// Optional.
-	Skipper Skipper
+	Skipper         Skipper
 }
 
 func Ginzap(logger ZapLogger, timeFormat string, utc bool) gin.HandlerFunc {
@@ -50,9 +50,10 @@ func GinzapWithConfig(logger ZapLogger, conf *Config) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 		start := time.Now()
-		// some evil middlewares modify this values
+		logid := uuid.NewString()
 		path := c.Request.URL.Path
 		query := c.Request.URL.RawQuery
+		c.Writer.Header().Set("X-Request-Id", logid)
 		c.Next()
 		track := true
 
@@ -86,6 +87,7 @@ func GinzapWithConfig(logger ZapLogger, conf *Config) gin.HandlerFunc {
 				zap.String("ip", c.ClientIP()),
 				zap.String("user-agent", c.Request.UserAgent()),
 				zap.Duration("latency", latency),
+				zap.String("X-Request-Id", logid),
 			}
 			if conf.TimeFormat != "" {
 				fields = append(fields, zap.String("time", end.Format(conf.TimeFormat)))
@@ -116,29 +118,18 @@ func defaultHandleRecovery(c *gin.Context, err interface{}) {
 	c.AbortWithStatus(http.StatusInternalServerError)
 }
 
-// RecoveryWithZap returns a gin.HandlerFunc (middleware)
-// that recovers from any panics and logs requests using uber-go/zap.
-// All errors are logged using zap.Error().
-// stack means whether output the stack info.
-// The stack info is easy to find where the error occurs but the stack info is too large.
 func RecoveryWithZap(logger ZapLogger, stack bool) gin.HandlerFunc {
 	return CustomRecoveryWithZap(logger, stack, defaultHandleRecovery)
 }
 
-// CustomRecoveryWithZap returns a gin.HandlerFunc (middleware) with a custom recovery handler
-// that recovers from any panics and logs requests using uber-go/zap.
-// All errors are logged using zap.Error().
-// stack means whether output the stack info.
-// The stack info is easy to find where the error occurs but the stack info is too large.
 func CustomRecoveryWithZap(logger ZapLogger, stack bool, recovery gin.RecoveryFunc) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		defer func() {
 			if err := recover(); err != nil {
-				// Check for a broken connection, as it is not really a
-				// condition that warrants a panic stack trace.
 				var brokenPipe bool
 				if ne, ok := err.(*net.OpError); ok {
-					if se, ok := ne.Err.(*os.SyscallError); ok {
+					var se *os.SyscallError
+					if errors.As(ne.Err, &se) {
 						if strings.Contains(strings.ToLower(se.Error()), "broken pipe") ||
 							strings.Contains(strings.ToLower(se.Error()), "connection reset by peer") {
 							brokenPipe = true

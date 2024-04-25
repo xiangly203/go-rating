@@ -1,4 +1,4 @@
 .idea
-/logs
+logs/
 *.local
 .env
