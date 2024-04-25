@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"go_gin/api/model"
+	"go_gin/biz/dal/cache"
 	"go_gin/biz/dal/db"
 	"go_gin/biz/entity/base"
 	"go_gin/biz/entity/user"
@@ -19,16 +20,16 @@ func GetCode(c *gin.Context) {
 		c.IndentedJSON(http.StatusOK, base.RespErr(base.RespErrWithServer, "服务器错误，请重试"))
 		return
 	}
-	code, err := db.GetRedisVal(phone)
-	if err != nil || len(code) == 0 {
+	code, err := cache.Ins.CacheGet(phone)
+	if err != nil || len(code.(string)) == 0 {
 		code, err = utils.GenCode(phone)
-		ok, _ := db.SetRedisVal(phone, code, config.CodeTTL)
-		if err != nil || ok != "OK" {
+		err = cache.Ins.CacheSet(phone, code, config.CodeTTL)
+		if err != nil {
 			c.IndentedJSON(http.StatusOK, base.RespErr(base.RespErrWithServer, "服务器错误，请重试"))
 			return
 		}
 	}
-	c.IndentedJSON(http.StatusOK, base.RespSuc(model.GetCodeResp{Code: code}))
+	c.IndentedJSON(http.StatusOK, base.RespSuc(model.GetCodeResp{Code: code.(string)}))
 }
 
 func Login(ctx *gin.Context) {

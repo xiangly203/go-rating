@@ -41,9 +41,10 @@ func PostgresInit() {
 }
 
 func CacheInit() {
-	cache.GetCacheIns(cache.RedisConf{
+	cache.GetRedisIns(cache.RedisConf{
 		Addr:     "localhost:6379",
 		Password: "",
 		Db:       0,
+		PoolSize: 10,
 	})
 }
