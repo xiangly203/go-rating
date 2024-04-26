@@ -5,13 +5,14 @@ import (
 	"go_gin/api/handler"
 	"go_gin/api/mw"
 	"go_gin/api/mw/logger"
-	"go_gin/biz/dal"
+	"go_gin/biz/dal/cache"
+	"go_gin/biz/dal/db"
 	"time"
 )
 
 func main() {
-	dal.PostgresInit()
-	dal.CacheInit()
+	db.PostgresInit()
+	cache.CacheInit()
 	router := gin.New()
 	logger.LogInit()
 

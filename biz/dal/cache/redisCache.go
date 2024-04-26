@@ -20,23 +20,23 @@ type RedisConf struct {
 }
 
 var (
-	Ins  Cache
 	once sync.Once
 )
 
-func GetRedisIns(redisConf RedisConf) Cache {
+func GetRedisIns(redisConf RedisConf) *RedisCache {
+	var redisIns *RedisCache
 	once.Do(func() {
 		rdb := redis.NewClient(&redis.Options{
 			Addr:     redisConf.Addr,
 			Password: redisConf.Password,
 			DB:       redisConf.Db,
 		})
-		Ins = &RedisCache{
+		redisIns = &RedisCache{
 			client: rdb,
 			ctx:    context.Background(),
 		}
 	})
-	return Ins
+	return redisIns
 }
 
 func (rc *RedisCache) CacheGet(key string) (any, error) {

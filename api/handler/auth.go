@@ -20,8 +20,9 @@ func GetCode(c *gin.Context) {
 		c.IndentedJSON(http.StatusOK, base.RespErr(base.RespErrWithServer, "服务器错误，请重试"))
 		return
 	}
-	code, err := cache.Ins.CacheGet(phone)
-	if err != nil || len(code.(string)) == 0 {
+	t, err := cache.CacheGet(phone)
+	code := t.(string)
+	if err != nil || len(code) == 0 {
 		code, err = utils.GenCode(phone)
 		err = cache.Ins.CacheSet(phone, code, config.CodeTTL)
 		if err != nil {
@@ -29,7 +30,7 @@ func GetCode(c *gin.Context) {
 			return
 		}
 	}
-	c.IndentedJSON(http.StatusOK, base.RespSuc(model.GetCodeResp{Code: code.(string)}))
+	c.IndentedJSON(http.StatusOK, base.RespSuc(model.GetCodeResp{Code: code}))
 }
 
 func Login(ctx *gin.Context) {
@@ -38,8 +39,8 @@ func Login(ctx *gin.Context) {
 		ctx.IndentedJSON(http.StatusOK, base.RespErr(base.RespErrWithServer, "服务器错误，请重试"))
 		return
 	}
-	code, err := db.GetRedisVal(req.Phone)
-	if err != nil || len(code) == 0 || req.Code != code {
+	code, err := cache.CacheGet(req.Phone)
+	if err != nil || len(code.(string)) == 0 || req.Code != code {
 		ctx.IndentedJSON(http.StatusOK, base.RespErr(base.RespErrWithPhoneOrCode, "手机号码或者验证码错误，请重试"))
 		return
 	}
