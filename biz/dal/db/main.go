@@ -1,4 +1,4 @@
-package dal
+package db
 
 import (
 	"gorm.io/driver/mysql"
@@ -23,7 +23,7 @@ func MysqlInit() {
 	}
 }
 
-var postgresUrl = "postgres:123456@tcp(localhost:5432)/test?charset=utf8&parseTime=True&loc=Local"
+var postgresUrl = "host=localhost user=postgres password=123456 dbname=test port=5432 sslmode=disable TimeZone=Asia/Shanghai"
 
 var Postgres *gorm.DB
 

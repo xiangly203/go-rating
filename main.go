@@ -5,25 +5,35 @@ import (
 	"go_gin/api/handler"
 	"go_gin/api/mw"
 	"go_gin/api/mw/logger"
-	"go_gin/biz/dal"
+	"go_gin/biz/dal/cache"
+	"go_gin/biz/dal/db"
+	"time"
 )
 
 func main() {
-	//gin.DisableConsoleColor()
-	//////记录日志
-	//f, _ := os.Create("./logs/gin.log")
-	//gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
-	//dal.MysqlInit()
-	dal.PostgresInit()
-	//router := gin.Default()
+	db.PostgresInit()
+	cache.CacheInit()
 	router := gin.New()
-	router.Use(gin.Recovery(), logger.TraceLogger())
-	router.POST("/getCode", handler.GetCode)
-	router.POST("/login", handler.Login)
+	logger.LogInit()
+
+	router.Use(logger.Ginzap(logger.Logger, time.RFC3339, true))
+
+	router.Use(logger.RecoveryWithZap(logger.Logger, true))
+	userApi := router.Group("/user")
+	{
+		userApi.GET("/code", handler.GetCode)
+		userApi.POST("/login", handler.Login)
+	}
 	router.Use(mw.JWTAuth())
+	shopApi := router.Group("/shop")
+	{
+		shopApi.GET("/list", handler.ShopList)
+		shopApi.GET("/detail", handler.ShopDetail)
+		shopApi.POST("/add", handler.ShopAdd)
+		shopApi.POST("/update", handler.ShopUpdate)
+	}
 	err := router.Run("localhost:8888")
 	if err != nil {
 		return
 	}
-	//test.TokenTest()
 }

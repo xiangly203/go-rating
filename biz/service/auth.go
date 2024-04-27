@@ -5,6 +5,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/joho/godotenv"
 	"go_gin/api/model"
+	"go_gin/api/mw/logger"
 	"go_gin/biz/dal/db"
 	"go_gin/config"
 	"os"
@@ -22,6 +23,7 @@ func GenerateToken(userInfo model.UserInfo, tokeType string) (string, error) {
 	}
 	err := godotenv.Load(".env.local")
 	if err != nil {
+		logger.Logger.Error("载入 .env 文件失败")
 		return "", errors.New("载入 .env 文件失败")
 	}
 	key := os.Getenv("JWT_KEY")

@@ -1,22 +1,15 @@
 package base
 
-import (
-	jsoniter "github.com/json-iterator/go"
-	"go_gin/config"
-)
-
-var json = jsoniter.ConfigCompatibleWithStandardLibrary
-
-type BaseResp struct {
-	Message string      `json:"message"`
-	Status  int64       `json:"status"`
-	Data    interface{} `json:"data"`
+type Resp struct {
+	Message string `json:"message"`
+	Status  int64  `json:"status"`
+	Data    any    `json:"data"`
 }
 
-func RespSuc(data interface{}) BaseResp {
-	return BaseResp{Status: config.RespOK, Message: "success", Data: data}
+func RespSuc(data any) Resp {
+	return Resp{Status: SUCCESS, Message: GetMsg(SUCCESS), Data: data}
 }
 
-func RespErr(status int64, message string) BaseResp {
-	return BaseResp{Status: status, Message: message, Data: ""}
+func RespErr(status int64, message string) Resp {
+	return Resp{Status: status, Message: message, Data: ""}
 }
