@@ -32,7 +32,7 @@ func main() {
 		shopApi.POST("/add", handler.ShopAdd)
 		shopApi.POST("/update", handler.ShopUpdate)
 	}
-	err := router.Run("localhost:8888")
+	err := router.Run(":8888")
 	if err != nil {
 		return
 	}
