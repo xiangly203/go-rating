@@ -2,8 +2,8 @@ package test
 
 import (
 	"fmt"
-	"go_gin/api/model"
-	entity "go_gin/biz/entity/shop"
+	"go_gin/internal/application/api/model"
+	entity "go_gin/internal/domain/entity/shop"
 	"go_gin/utils"
 	"testing"
 )
